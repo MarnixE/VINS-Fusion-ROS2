@@ -30,6 +30,8 @@ rclcpp::Publisher<nav_msgs::msg::Odometry>::SharedPtr pub_global_odometry;
 rclcpp::Publisher<nav_msgs::msg::Path>::SharedPtr pub_global_path;
 rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr pub_car;
 nav_msgs::msg::Path *global_path;
+std::string world_frame_id;
+std::string body_frame_id;
 double last_vio_t = -1;
 std::queue<sensor_msgs::msg::NavSatFix::SharedPtr> gpsQueue;
 std::mutex m_buf;
@@ -44,7 +46,7 @@ void publish_car_model(double t, Eigen::Vector3d t_w_car, Eigen::Quaterniond q_w
     car_mesh.header.stamp.sec = sec_ts;
     car_mesh.header.stamp.nanosec = nsec_ts;
 
-    car_mesh.header.frame_id = "world";
+    car_mesh.header.frame_id = world_frame_id;
     car_mesh.type = visualization_msgs::msg::Marker::MESH_RESOURCE;
     car_mesh.action = visualization_msgs::msg::Marker::ADD;
     car_mesh.id = 0;
@@ -129,8 +131,8 @@ void vio_callback(const nav_msgs::msg::Odometry::SharedPtr pose_msg)
 
     nav_msgs::msg::Odometry odometry;
     odometry.header = pose_msg->header;
-    odometry.header.frame_id = "world";
-    odometry.child_frame_id = "world";
+    odometry.header.frame_id = world_frame_id;
+    odometry.child_frame_id = body_frame_id;
     odometry.pose.pose.position.x = global_t.x();
     odometry.pose.pose.position.y = global_t.y();
     odometry.pose.pose.position.z = global_t.z();
@@ -176,14 +178,15 @@ int main(int argc, char **argv)
     auto n = rclcpp::Node::make_shared("globalEstimator");
     auto qos_profile = rclcpp::QoS(rclcpp::KeepLast(100));
 
+    n->declare_parameter<std::string>("world_frame_id", "world");
+    n->declare_parameter<std::string>("body_frame_id", "body");
+    world_frame_id = n->get_parameter("world_frame_id").as_string();
+    body_frame_id = n->get_parameter("body_frame_id").as_string();
+    globalEstimator.world_frame_id = world_frame_id;
 
     auto sub_GPS = n->create_subscription<sensor_msgs::msg::NavSatFix>("/gps", rclcpp::QoS(rclcpp::KeepLast(100)), GPS_callback);
 
     auto sub_vio = n->create_subscription<nav_msgs::msg::Odometry>("/vins_estimator/odometry", rclcpp::QoS(rclcpp::KeepLast(100)), vio_callback);
-
-
-
-
 
     pub_global_path = n->create_publisher<nav_msgs::msg::Path>("global_path", 100);
     pub_global_odometry = n->create_publisher<nav_msgs::msg::Odometry>("global_odometry", 100);

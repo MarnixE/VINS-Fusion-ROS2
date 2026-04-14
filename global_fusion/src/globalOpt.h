@@ -41,10 +41,7 @@ public:
 	void inputOdom(double t, Eigen::Vector3d OdomP, Eigen::Quaterniond OdomQ);
 	void getGlobalOdom(Eigen::Vector3d &odomP, Eigen::Quaterniond &odomQ);
 	nav_msgs::msg::Path global_path;
-
-	
-
-
+	std::string world_frame_id = "world";
 
 private:
 	void GPS2XYZ(double latitude, double longitude, double altitude, double* xyz);

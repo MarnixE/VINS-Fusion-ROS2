@@ -13,8 +13,6 @@
 #include "Factors.h"
 
 
-
-
 GlobalOptimization::GlobalOptimization()
 {
 	initGPS = false;
@@ -64,7 +62,7 @@ void GlobalOptimization::inputOdom(double t, Eigen::Vector3d OdomP, Eigen::Quate
     pose_stamped.header.stamp.sec = sec_ts;
     pose_stamped.header.stamp.nanosec = nsec_ts;
 
-    pose_stamped.header.frame_id = "world";
+    pose_stamped.header.frame_id = world_frame_id;
     pose_stamped.pose.position.x = lastP.x();
     pose_stamped.pose.position.y = lastP.y();
     pose_stamped.pose.position.z = lastP.z();
@@ -269,7 +267,7 @@ void GlobalOptimization::updateGlobalPath()
         pose_stamped.header.stamp.sec = sec_ts;
         pose_stamped.header.stamp.nanosec = nsec_ts;
 
-        pose_stamped.header.frame_id = "world";
+        pose_stamped.header.frame_id = world_frame_id;
         pose_stamped.pose.position.x = iter->second[0];
         pose_stamped.pose.position.y = iter->second[1];
         pose_stamped.pose.position.z = iter->second[2];

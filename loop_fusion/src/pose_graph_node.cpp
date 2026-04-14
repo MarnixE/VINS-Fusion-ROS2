@@ -61,6 +61,10 @@ int ROW;
 int COL;
 int DEBUG_IMAGE;
 
+std::string WORLD_FRAME_ID = "world";
+std::string BODY_FRAME_ID = "body";
+std::string CAMERA_FRAME_ID = "camera";
+
 camodocal::CameraPtr m_camera;
 Eigen::Vector3d tic;
 Eigen::Matrix3d qic;
