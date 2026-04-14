@@ -173,7 +173,7 @@ void PoseGraph::addKeyFrame(KeyFrame* cur_kf, bool flag_detect_loop)
     pose_stamped.header.stamp.sec = sec_ts;
     pose_stamped.header.stamp.nanosec = nsec_ts;
 
-    pose_stamped.header.frame_id = "world";
+    pose_stamped.header.frame_id = WORLD_FRAME_ID;
     pose_stamped.pose.position.x = P.x() + VISUALIZATION_SHIFT_X;
     pose_stamped.pose.position.y = P.y() + VISUALIZATION_SHIFT_Y;
     pose_stamped.pose.position.z = P.z();
@@ -282,7 +282,7 @@ void PoseGraph::loadKeyFrame(KeyFrame* cur_kf, bool flag_detect_loop)
     pose_stamped.header.stamp.sec = sec_ts;
     pose_stamped.header.stamp.nanosec = nsec_ts;
 
-    pose_stamped.header.frame_id = "world";
+    pose_stamped.header.frame_id = WORLD_FRAME_ID;
     pose_stamped.pose.position.x = P.x() + VISUALIZATION_SHIFT_X;
     pose_stamped.pose.position.y = P.y() + VISUALIZATION_SHIFT_Y;
     pose_stamped.pose.position.z = P.z();
@@ -822,7 +822,7 @@ void PoseGraph::updatePath()
         pose_stamped.header.stamp.sec = sec_ts;
         pose_stamped.header.stamp.nanosec = nsec_ts;
 
-        pose_stamped.header.frame_id = "world";
+        pose_stamped.header.frame_id = WORLD_FRAME_ID;
         pose_stamped.pose.position.x = P.x() + VISUALIZATION_SHIFT_X;
         pose_stamped.pose.position.y = P.y() + VISUALIZATION_SHIFT_Y;
         pose_stamped.pose.position.z = P.z();

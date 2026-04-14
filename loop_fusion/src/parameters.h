@@ -34,5 +34,6 @@ extern int ROW;
 extern int COL;
 extern std::string VINS_RESULT_PATH;
 extern int DEBUG_IMAGE;
-
-
+extern std::string WORLD_FRAME_ID;
+extern std::string BODY_FRAME_ID;
+extern std::string CAMERA_FRAME_ID;

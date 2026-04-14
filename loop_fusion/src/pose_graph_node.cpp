@@ -212,7 +212,7 @@ void vio_callback(const nav_msgs::msg::Odometry::SharedPtr pose_msg)
 
     nav_msgs::msg::Odometry odometry;
     odometry.header = pose_msg->header;
-    odometry.header.frame_id = "world";
+    odometry.header.frame_id = WORLD_FRAME_ID;
     odometry.pose.pose.position.x = vio_t.x();
     odometry.pose.pose.position.y = vio_t.y();
     odometry.pose.pose.position.z = vio_t.z();
@@ -466,6 +466,13 @@ int main(int argc, char **argv)
     fsSettings["pose_graph_save_path"] >> POSE_GRAPH_SAVE_PATH;
     fsSettings["output_path"] >> VINS_RESULT_PATH;
     fsSettings["save_image"] >> DEBUG_IMAGE;
+
+    fsSettings["world_frame_id"] >> WORLD_FRAME_ID;
+    WORLD_FRAME_ID.empty()? WORLD_FRAME_ID = "world" : WORLD_FRAME_ID;
+    fsSettings["body_frame_id"] >> BODY_FRAME_ID;   
+    BODY_FRAME_ID.empty()? BODY_FRAME_ID = "body" : BODY_FRAME_ID;
+    fsSettings["camera_frame_id"] >> CAMERA_FRAME_ID;
+    CAMERA_FRAME_ID.empty()? CAMERA_FRAME_ID = "camera" : CAMERA_FRAME_ID;
 
     LOAD_PREVIOUS_POSE_GRAPH = fsSettings["load_previous_pose_graph"];
     VINS_RESULT_PATH = VINS_RESULT_PATH + "/vio_loop.csv";
