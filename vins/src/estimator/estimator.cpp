@@ -348,7 +348,7 @@ void Estimator::processMeasurements()
             printStatistics(*this, 0);
 
             std_msgs::msg::Header header;
-            header.frame_id = "world";
+            header.frame_id = WORLD_FRAME_ID;
 
             int sec_ts = (int)feature.first;
             uint nsec_ts = (uint)((feature.first - sec_ts) * 1e9);

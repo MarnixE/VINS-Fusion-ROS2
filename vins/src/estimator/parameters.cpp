@@ -50,6 +50,9 @@ double F_THRESHOLD;
 int SHOW_TRACK;
 int FLOW_BACK;
 
+std::string WORLD_FRAME_ID;
+std::string BODY_FRAME_ID;
+std::string CAMERA_FRAME_ID;
 
 template <typename T>
 T readParam(rclcpp::Node::SharedPtr n, std::string name)
@@ -204,6 +207,16 @@ void readParameters(std::string config_file)
         ESTIMATE_TD = 0;
         printf("no imu, fix extrinsic param; no time offset calibration\n");
     }
+
+    fsSettings["global_frame_id"] >> WORLD_FRAME_ID;
+    WORLD_FRAME_ID.empty()? WORLD_FRAME_ID = "world" : WORLD_FRAME_ID;
+    fsSettings["body_frame_id"] >> BODY_FRAME_ID;   
+    BODY_FRAME_ID.empty()? BODY_FRAME_ID = "body" : BODY_FRAME_ID;
+    fsSettings["camera_frame_id"] >> CAMERA_FRAME_ID;
+    CAMERA_FRAME_ID.empty()? CAMERA_FRAME_ID = "camera" : CAMERA_FRAME_ID;
+    
+    ROS_INFO("frame_ids: world=%s body=%s camera=%s", WORLD_FRAME_ID.c_str(),
+             BODY_FRAME_ID.c_str(), CAMERA_FRAME_ID.c_str());
 
     fsSettings.release();
 }
