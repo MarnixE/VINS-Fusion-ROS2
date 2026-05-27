@@ -67,7 +67,12 @@ target_link_libraries(kitti_odom_test vins_lib)
 
 add_executable(kitti_gps_test src/KITTIGPSTest.cpp)
 ament_target_dependencies(kitti_gps_test rclcpp rcpputils std_msgs visualization_msgs geometry_msgs nav_msgs tf2 tf2_ros cv_bridge camera_models image_transport)
-target_link_libraries(kitti_gps_test vins_lib) 
+target_link_libraries(kitti_gps_test vins_lib)
+
+add_executable(dataset_node src/datasetNode.cpp)
+set_target_properties(dataset_node PROPERTIES CXX_STANDARD 17)
+ament_target_dependencies(dataset_node rclcpp rcpputils std_msgs visualization_msgs geometry_msgs nav_msgs tf2 tf2_ros cv_bridge camera_models image_transport)
+target_link_libraries(dataset_node vins_lib)
 
 # added from DEBUG
 
@@ -85,7 +90,7 @@ install(
 
 # Install nodes
 install(
-  TARGETS vins_node
+  TARGETS vins_node dataset_node kitti_odom_test kitti_gps_test
   DESTINATION lib/${PROJECT_NAME}
 )
 
