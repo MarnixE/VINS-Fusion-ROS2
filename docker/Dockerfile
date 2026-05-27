@@ -1,46 +1,43 @@
-FROM ros:kinetic-perception
+FROM ros:humble
 
-ENV CERES_VERSION="1.12.0"
-ENV CATKIN_WS=/root/catkin_ws
+ARG DEBIAN_FRONTEND=noninteractive
+ARG CERES_VERSION=2.1.0
+ENV ROS_WS=/ros2_ws
 
-      # set up thread number for building
-RUN   if [ "x$(nproc)" = "x1" ] ; then export USE_PROC=1 ; \
-      else export USE_PROC=$(($(nproc)/2)) ; fi && \
-      apt-get update && apt-get install -y \
-      cmake \
-      libatlas-base-dev \
-      libeigen3-dev \
-      libgoogle-glog-dev \
-      libsuitesparse-dev \
-      python-catkin-tools \
-      ros-${ROS_DISTRO}-cv-bridge \
-      ros-${ROS_DISTRO}-image-transport \
-      ros-${ROS_DISTRO}-message-filters \
-      ros-${ROS_DISTRO}-tf && \
-      rm -rf /var/lib/apt/lists/* && \
-      # Build and install Ceres
-      git clone https://ceres-solver.googlesource.com/ceres-solver && \
-      cd ceres-solver && \
-      git checkout tags/${CERES_VERSION} && \
-      mkdir build && cd build && \
-      cmake .. && \
-      make -j$(USE_PROC) install && \
-      rm -rf ../../ceres-solver && \
-      mkdir -p $CATKIN_WS/src/VINS-Fusion/
+RUN apt-get update && apt-get install -y \
+    cmake \
+    git \
+    libatlas-base-dev \
+    libboost-all-dev \
+    libeigen3-dev \
+    libgflags-dev \
+    libgoogle-glog-dev \
+    libopencv-dev \
+    libsuitesparse-dev \
+    python3-colcon-common-extensions \
+    ros-${ROS_DISTRO}-ament-index-cpp \
+    ros-${ROS_DISTRO}-cv-bridge \
+    ros-${ROS_DISTRO}-image-transport \
+    ros-${ROS_DISTRO}-launch \
+    ros-${ROS_DISTRO}-launch-ros \
+    ros-${ROS_DISTRO}-rcpputils \
+    ros-${ROS_DISTRO}-tf2 \
+    ros-${ROS_DISTRO}-tf2-ros \
+    ros-${ROS_DISTRO}-visualization-msgs \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy VINS-Fusion
-COPY ./ $CATKIN_WS/src/VINS-Fusion/
-# use the following line if you only have this dockerfile
-# RUN git clone https://github.com/HKUST-Aerial-Robotics/VINS-Fusion.git
+RUN git clone --branch ${CERES_VERSION} --depth 1 https://ceres-solver.googlesource.com/ceres-solver /tmp/ceres-solver && \
+    cmake -S /tmp/ceres-solver -B /tmp/ceres-solver/build -DCMAKE_BUILD_TYPE=Release -DBUILD_TESTING=OFF -DBUILD_EXAMPLES=OFF && \
+    cmake --build /tmp/ceres-solver/build -j"$(nproc)" --target install && \
+    rm -rf /tmp/ceres-solver
 
-# Build VINS-Fusion
-WORKDIR $CATKIN_WS
-ENV TERM xterm
-ENV PYTHONIOENCODING UTF-8
-RUN catkin config \
-      --extend /opt/ros/$ROS_DISTRO \
-      --cmake-args \
-        -DCMAKE_BUILD_TYPE=Release && \
-    catkin build && \
-    sed -i '/exec "$@"/i \
-            source "/root/catkin_ws/devel/setup.bash"' /ros_entrypoint.sh
+WORKDIR ${ROS_WS}
+COPY . src/vins-fusion-ros2/
+
+RUN . /opt/ros/${ROS_DISTRO}/setup.sh && \
+    colcon build --cmake-args -DCMAKE_BUILD_TYPE=Release && \
+    rm -rf build/ log/
+
+RUN sed -i '/exec "$@"/i source "${ROS_WS}/install/setup.bash"' /ros_entrypoint.sh
+
+CMD ["bash"]

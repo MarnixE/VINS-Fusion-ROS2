@@ -1,16 +1,19 @@
+IMAGE := vins-fusion-ros2
+
 all: help
 
 help:
 	@echo ""
-	@echo "-- Help Menu"
+	@echo "-- Help Menu (run from project root)"
 	@echo ""
-	@echo "   1. make build              - build all images"
-	# @echo "   1. make pull             - pull all images"
-	@echo "   1. make clean              - remove all images"
+	@echo "   make build   - build the Docker image"
+	@echo "   make clean   - remove the Docker image"
 	@echo ""
 
 build:
-	@docker build --tag ros:vins-fusion -f ./Dockerfile ..
+	docker build --tag $(IMAGE) -f docker/Dockerfile .
 
 clean:
-	@docker rmi -f ros:vins-fusion
+	docker rmi -f $(IMAGE)
+
+.PHONY: all help build clean
